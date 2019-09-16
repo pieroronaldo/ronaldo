@@ -24,6 +24,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText email;
     private EditText contraseña;
     private Button registrar;
+    private Button Login;
+    private Button Logout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
         contraseña = (EditText) findViewById(R.id.txtcontraseña);
         registrar = (Button) findViewById(R.id.btnregistrar);
         estado = (TextView) findViewById(R.id.lblestado);
-
+        Login=(Button)findViewById(R.id.buttonLogin);
+        Logout=(Button)findViewById(R.id.buttonSalir);
 
 
 mAuth =FirebaseAuth.getInstance();
@@ -44,6 +48,22 @@ registrar.setOnClickListener(new View.OnClickListener() {
         RegistrarUser();
     }
 });
+Login.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View view) {
+        loginUser();
+    }
+});
+
+Logout.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View view) {
+        FirebaseAuth.getInstance().signOut();
+    }
+});
+
+
+
 mAuthListener = new FirebaseAuth.AuthStateListener() {
     @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -87,6 +107,29 @@ mAuthListener = new FirebaseAuth.AuthStateListener() {
                         }
                     }
                 });
+}
+
+private  void  loginUser(){
+        String emaill= email.getText().toString().trim();
+        String password = contraseña.getText().toString().trim();
+        if(TextUtils.isEmpty(emaill)){
+            Toast.makeText(this,"Ingresar Email",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(password)){
+            Toast.makeText(this,"Ingresar contraseña",Toast.LENGTH_SHORT).show();
+        return;
+        }
+        mAuth.signInWithEmailAndPassword(emaill,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    Toast.makeText(MainActivity.this,"Usuario Logueado",Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(MainActivity.this,"No se pudo Loguear",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 }
 
 private FirebaseAuth mAuth;
